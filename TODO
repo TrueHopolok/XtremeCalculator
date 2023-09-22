@@ -1,0 +1,14 @@
+- Add settings:
+    + Sensetivity (optional)
+    + Key binds
+    + Audio volume
+    + Difficulty (if change is confiremed: erase last run)
+    + Show fps counter (default off)
+- Saving/Loading settings
+- Add run save file:
+    + Score
+    + Passed mathematical problems
+    + Upgrades to your gun
+    + Collected power ups
+- Saving/loading run save file:
+    + Save ecrypted with in different file type (optional)
