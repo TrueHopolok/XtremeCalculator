@@ -7,5 +7,5 @@ Game created by
 for a school project.
 
 Links to use:
-https://github.com/mx0c/super-mario-python/blob/master/main.py
-https://www.pygame.org/docs/
+- https://github.com/mx0c/super-mario-python/blob/master/main.py
+- https://www.pygame.org/docs/
