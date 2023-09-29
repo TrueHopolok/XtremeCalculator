@@ -2,19 +2,33 @@ import pygame
 
 class GameManager():
     def __init__(self):
-        pass
+        self.INPUT = {"direction": [0, 0], "mouse": ()}
     def update(self, events):
-        pygame.mouse.get_pressed(3)
+        self.INPUT["mouse"] = pygame.mouse.get_pressed(3)
         for e in events:
-            # e.key == pygame.mouse.get_pressed
-            # e.type == pygame.MOUSEBUTTONDOWN
-            
-            # if e.key
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_ESCAPE:
-                    print(True)
+                    ## TODO open option menu
+                    pass
                 if e.key == pygame.K_RIGHT:
-                    print("pressed right")
-            if e.type == pygame.KEYUP:
+                    self.INPUT["direction"][0] = 1
+                if e.key == pygame.K_LEFT:
+                    self.INPUT["direction"][0] = -1
+                if e.key == pygame.K_DOWN:
+                    self.INPUT["direction"][1] = 1
+                if e.key == pygame.K_UP:
+                    self.INPUT["direction"][1] = -1
+            elif e.type == pygame.KEYUP:
                 if e.key == pygame.K_RIGHT:
-                    print("pressed right")
+                    if self.INPUT["direction"][0] != -1:
+                        self.INPUT["direction"][0] = 0
+                if e.key == pygame.K_LEFT:
+                    if self.INPUT["direction"][0] != 1:
+                        self.INPUT["direction"][0] = 0
+                if e.key == pygame.K_DOWN:
+                    if self.INPUT["direction"][1] != -1:
+                        self.INPUT["direction"][1] = 0
+                if e.key == pygame.K_UP:
+                    if self.INPUT["direction"][1] != 1:
+                        self.INPUT["direction"][1] = 0
+        # print(self.INPUT["direction"], self.INPUT["mouse"])
