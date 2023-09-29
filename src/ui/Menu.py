@@ -1,7 +1,9 @@
+import pygame
 from ui.Button import Button
 
 class Menu():
-    def __init__(self, buttons, texts):
+    def __init__(self, screen, buttons, texts):
+        self.SCREEN = screen
         self.BUTTONS = buttons
         self.TEXTS = texts
     def collision(m_pos):
@@ -11,7 +13,7 @@ class Menu():
                     b.pressed()
     def render():
         for t in self.TEXTS:
-            t.render()
+            self.SCREEN.blit(t)
         for b in self.BUTTONS:
             b.render()
         

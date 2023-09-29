@@ -1,13 +1,17 @@
+import pygame
 from ui.Menu import Menu
-from ui.Button import Button
-from ui.Text import Text
+from ui.StartButton import StartButton
 
 class MainMenu(Menu):
-    def __init__(self):
+    def __init__(self, screen):
+        self.SCREEN = screen
         buttons = []
         texts = []
-        # Adding texts and buttons
-        super(MainMenu, self).__init__(buttons, texts)
+        # BUTTON = StartButton()
+        # TEXT = font.render("Vadims Truhanovs, 11.a", True, (0, 60, 60)), (10, SCREEN_HEIGHT - FONT_REGULAR_SIZE - 10)
+        # IMG = pygame.transform.scale(pygame.image.load(""), (SCREEN_WIDTH, SCREEN_HEIGHT))
+        # Screen.blit
+        super(MainMenu, self).__init__(screen, buttons, texts)
     def collision():
         super(MainMenu, self).collision(buttons, texts)
     def render():
