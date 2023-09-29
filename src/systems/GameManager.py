@@ -1,10 +1,21 @@
 import pygame
+from ui.Menu import Menu
+
+class GameState():
+    def __init__(self, pause, mainmenu):
+        self.Paused = pause
+        self.MainMenu = mainmenu
 
 class GameManager():
-    def __init__(self):
-        self.INPUT = {"direction": [0, 0], "mouse": ()}
+    def __init__(self, pause, main_menu, loaded_menu):
+        self.INPUT = {"direction": [0, 0], "mouse": (), "m_pos": ()}
+        self.STATE = GameState(pause, main_menu)
+        self.MENU = loaded_menu
+        # self.MENU = # main menu class #
     def update(self, events):
+        ## Input handle
         self.INPUT["mouse"] = pygame.mouse.get_pressed(3)
+        self.INPUT["m_pos"] = pygame.mouse.get_pos()
         for e in events:
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_ESCAPE:
@@ -31,4 +42,20 @@ class GameManager():
                 if e.key == pygame.K_UP:
                     if self.INPUT["direction"][1] != 1:
                         self.INPUT["direction"][1] = 0
-        # print(self.INPUT["direction"], self.INPUT["mouse"])
+        # print(self.INPUT["direction"], self.INPUT["mouse"]) # DEBUG
+        
+        ## Menu logic
+        if self.STATE.Paused:
+            pass
+        
+        ## Game logic
+        else:
+            pass
+            
+        ## Render only mainmenu
+        if self.STATE.MainMenu:
+            pass
+        
+        ## Render everything
+        else:
+            pass
