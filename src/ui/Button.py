@@ -7,8 +7,8 @@ class Button():
         self.SIZE = size
         self.IMG = img
         self.TEXT = text
-    def pressed():
+    def pressed(self):
         pass
-    def render():
+    def render(self):
         self.SCREEN.blit(img, self.POS)
         self.SCREEN.blit(text, self.POS)

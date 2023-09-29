@@ -12,7 +12,7 @@ class MainMenu(Menu):
         # IMG = pygame.transform.scale(pygame.image.load(""), (SCREEN_WIDTH, SCREEN_HEIGHT))
         # Screen.blit
         super(MainMenu, self).__init__(screen, buttons, texts)
-    def collision():
-        super(MainMenu, self).collision(buttons, texts)
-    def render():
+    def collision(self, m_pos):
+        super(MainMenu, self).collision(m_pos)
+    def render(self):
         super(MainMenu, self).render()

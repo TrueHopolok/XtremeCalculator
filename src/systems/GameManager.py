@@ -42,20 +42,24 @@ class GameManager():
                 if e.key == pygame.K_UP:
                     if self.INPUT["direction"][1] != 1:
                         self.INPUT["direction"][1] = 0
-        # print(self.INPUT["direction"], self.INPUT["mouse"]) # DEBUG
+        print(self.INPUT) # DEBUG
         
         ## Menu logic
         if self.STATE.Paused:
-            pass
+            self.MENU.collision(self.INPUT["m_pos"])
         
         ## Game logic
         else:
             pass
             
-        ## Render only mainmenu
-        if self.STATE.MainMenu:
+        ## Rendering
+        if not self.STATE.MainMenu:
+            # walls
+            # doors
+            # buttons
+            # obstacles
+            # enemies
+            # boses
             pass
-        
-        ## Render everything
-        else:
-            pass
+        if self.STATE.Paused:
+            self.MENU.render()
