@@ -23,6 +23,7 @@ class GameInfo():
         self.ProblemsSolved = 0
         self.Problem = ""
         self.Answer = ""
+        self.CurrentAnswer = ""
         self.MiniBoss = MiniBoss()
 
 class GameManager():
@@ -35,6 +36,7 @@ class GameManager():
         self.Enemies = []
         self.EnemyBullets = []
         self.Boss = Boss()
+        self.Button = Button()
         self.MENU = loaded_menu
         # self.MENU = # main menu class #
     def update(self, events):
@@ -120,7 +122,47 @@ class GameManager():
         
         ## Game logic
         else:
-            pass
+            b = 0
+            while b < len(self.PlayerBullets):
+                self.PlayerBullets[b]["pos"] += self.PlayerBullets[b]["dir"]
+                if self.PlayerBullets[b]["pos"][0] * self.PlayerBullets[b]["pos"][1] < 0 or self.PlayerBullets[b]["pos"][0] + self.PlayerBullets[b]["pos"][1] > 1750:
+                    self.PlayerBullets.pop(b)
+                    continue
+                b += 1
+            b = 0
+            while b < len(self.EnemyBullets):
+                self.EnemyBullets[b]["pos"] += self.EnemyBullets[b]["dir"]
+                if self.EnemyBullets[b]["pos"][0] * self.EnemyBullets[b]["pos"][1] < 0 or self.EnemyBullets[b]["pos"][0] + self.EnemyBullets[b]["pos"][1] > 1750:
+                    self.EnemyBullets.pop(b)
+                    continue
+                b += 1
+            self.Player.Update(self.INPUT, self.PlayerBullets, self.EnemyBullets)
+            e = 0
+            status = 0
+            while e < len(self.Enemies):
+                status = self.Enemies[e].Update(self.PlayerBullets, self.EnemyBullets)
+                if status == -1:
+                    self.Enemies.pop(e)
+                    continue
+                e += 1
+            if self.Boss.State == "alive":
+                self.Boss.Update(self.PlayerBullets, self.EnemyBullets)
+            if self.Boss.State = "notspawned" and len(self.Enemies) == 0:
+                status = self.Button.Update(self.Player.Pos, self.INPUT, self.INFO.CurrentRoom, self.INFO.Answer, self.INFO.CurrentAnswer)
+                match status:
+                    case 1:
+                        self.Boss.State = "alive"
+                    case 2:
+                        # add to answer
+                        pass
+                    case 3:
+                        # delete answer
+                        pass
+                    
+            if self.Boss.State = "dead" and len(self.Enemies) == 0:
+                self.Portal.Update(self.Player.Pos, self.INPUT)
+                self.Doors.Update(self.INFO.Rooms)
+            
             
         ## Rendering
         if not self.STATE.MainMenu:

@@ -5,3 +5,5 @@ class Player():
         pass
     def Reset(self):
         pass
+    def Update(self, _input, _player_bullets, _enemy_bullets):
+        pass
