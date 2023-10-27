@@ -7,14 +7,14 @@ FPS = 60
 HEIGHT = 1000
 WIDTH = 800
 TITLE = "Xtreme Calculator"
-# ICON = ""
+ICON = "../img/icon.png"
 # MUSIC = ""
 
 ## Screen init 
 pygame.init()
 screen = pygame.display.set_mode((HEIGHT, WIDTH))
 pygame.display.set_caption(TITLE)
-# pygame.display.set_icon(pygame.image.load(ICON))
+pygame.display.set_icon(pygame.image.load(ICON))
 
 ## Cursor
 pygame.mouse.set_cursor(*pygame.cursors.broken_x)

@@ -26,20 +26,20 @@ class MainInfo():
         self.MiniBoss = MiniBoss()
 
 class Menus():
-    def __init__(self, is_main_menu : bool, is_options : bool):
+    def __init__(self, screen, is_main_menu : bool, is_options : bool):
         self.IsMainMenu = is_main_menu
         self.IsOptionsMenu = is_options
-        self.MainMenu = MainMenu()
-        self.OptionsMenu = Options()
+        self.MainMenu = MainMenu(screen)
+        self.OptionsMenu = Options(screen)
     def Collision(self, player_input : dict):
         if self.IsMainMenu and (not self.IsOptionsMenu):
-            self.MainMenu.Collision(player_input)
+            return self.MainMenu.Collision(player_input)
         elif self.IsOptionsMenu:
-            self.OptionsMenu.Collision(player_input)
+            return self.OptionsMenu.Collision(player_input)
     def Render(self):
         if self.IsMainMenu:
             self.MainMenu.Render()
-        if self.OptionsMenu:
+        if self.IsOptionsMenu:
             self.OptionsMenu.Render()
 
 class Entities():
@@ -58,7 +58,7 @@ class GameManager():
         self.SCREEN = game_screen
         self.INPUT = {"direction": [0, 0], "mouse": (), "m_pos": ()}
         self.INFO = MainInfo()
-        self.MENUS = Menus(start_in_main_menu, False)
+        self.MENUS = Menus(game_screen, start_in_main_menu, False)
         self.ENTITIES = Entities()
     def EnterNewRoom(self):
         self.ENTITIES.Player.Pos[0] = 1000 - self.ENTITIES.Player.Pos[0]
@@ -106,11 +106,21 @@ class GameManager():
                 if e.key == pygame.K_UP:
                     if self.INPUT["direction"][1] != 1:
                         self.INPUT["direction"][1] = 0
-        # print(self.INPUT) # DEBUG
         
         ## Menu logic
         if self.MENUS.IsMainMenu or self.MENUS.IsOptionsMenu:
-            self.MENUS.Collision(self.INPUT)
+            status = self.MENUS.Collision(self.INPUT)
+            match status:
+                case 3:
+                    print("3")
+                case 2:
+                    print("2")
+                case 1:
+                    self.MENUS.IsMainMenu = False
+                    self.INFO.Loaded = False
+                    self.INFO.ProblemsSolved = 0
+                case _:
+                    pass
         
         ## Load game
         elif not self.INFO.Loaded:
@@ -147,7 +157,6 @@ class GameManager():
                         a, b = b, a
                     self.INFO.Answer = f"{a//b}"
                     self.INFO.Problem = f"{a}//{b}="
-            # print(self.INFO.Rooms, "\n", self.INFO.Problem, self.INFO.Answer, sep="") # DEBUG
             self.ENTITIES.Player.Reset()
             self.ENTITIES.PlayerBullets = []
             self.ENTITIES.Enemies = []

@@ -8,4 +8,7 @@
     + Audio volume
     + Difficulty (if change is confiremed: erase last run)
     + Show fps counter (default off)
-    
+
+## Missing texture:
+- MainMenu
+- Options
