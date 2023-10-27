@@ -1,6 +1,5 @@
 import pygame
 import random
-from systems.SoundManager import SoundManager
 from ui.MainMenu import MainMenu
 from ui.Options import Options
 from entities.Player import Player
@@ -60,7 +59,6 @@ class GameManager():
         self.INFO = MainInfo()
         self.MENUS = Menus(start_in_main_menu, False)
         self.ENTITIES = Entities()
-        self.SOUND = SoundManager()
     def EnterNewRoom(self):
         self.ENTITIES.Player.Pos[0] = 1000 - self.ENTITIES.Player.Pos[0]
         self.ENTITIES.Player.Pos[1] = 750 - self.ENTITIES.Player.Pos[1]
