@@ -54,7 +54,8 @@ class Entities():
         self.Portal = Portal()
 
 class GameManager():
-    def __init__(self, start_in_main_menu : bool):
+    def __init__(self, game_screen, start_in_main_menu : bool):
+        self.SCREEN = game_screen
         self.INPUT = {"direction": [0, 0], "mouse": (), "m_pos": ()}
         self.INFO = MainInfo()
         self.MENUS = Menus(start_in_main_menu, False)
@@ -62,6 +63,11 @@ class GameManager():
     def EnterNewRoom(self):
         self.ENTITIES.Player.Pos[0] = 1000 - self.ENTITIES.Player.Pos[0]
         self.ENTITIES.Player.Pos[1] = 750 - self.ENTITIES.Player.Pos[1]
+        self.ENTITIES.EnemyBullets = []
+        self.ENTITIES.PlayerBullets = []
+        self.ENTITIES.Enemies = []
+        if self.INFO.CurrentRoom == 10:
+            return
         if self.INFO.MiniBoss.Respawn > 0:
             self.INFO.MiniBoss.Respawn -= 1
         elif random.randint(0, 99) < self.INFO.MiniBoss.Chance:

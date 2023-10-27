@@ -1,5 +1,11 @@
 import pygame
 
+'''
+0 - 9 = rooms with numbers
+10 = room with equal sign
+11 = room do not exist
+'''
+
 class Doors():
     def __init__(self):
         pass

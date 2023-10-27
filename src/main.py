@@ -36,7 +36,7 @@ pygame.mixer_music.set_volume(50)
 '''
 
 ## Game logic init
-game_manager = GameManager(True)
+game_manager = GameManager(screen, True)
 
 ## Game loop
 while running:
