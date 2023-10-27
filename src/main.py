@@ -8,6 +8,7 @@ HEIGHT = 1000
 WIDTH = 800
 TITLE = "Xtreme Calculator"
 # ICON = ""
+# MUSIC = ""
 
 ## Screen init 
 pygame.init()
@@ -26,6 +27,13 @@ Fps_Font = pygame.font.SysFont('Cascadia Code', 25)
 clock = pygame.time.Clock()
 running = True
 delta = 1000/FPS
+
+## Music init
+''' 
+pygame.mixer_music.load(MUSIC)
+pygame.mixer.music.play(-1)
+pygame.mixer_music.set_volume(50)
+'''
 
 ## Game logic init
 game_manager = GameManager(True)
