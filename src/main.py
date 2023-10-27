@@ -29,7 +29,7 @@ running = True
 delta = 1000/FPS
 
 ## Game logic init
-game_manager = GameManager(True, True, MainMenu(screen))
+game_manager = GameManager(False, False, MainMenu(screen))
 
 ## Game loop
 while running:

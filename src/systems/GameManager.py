@@ -1,6 +1,9 @@
 import pygame
 from ui.Menu import Menu
 
+Player = unknown
+
+
 class GameState():
     def __init__(self, pause, mainmenu):
         self.Paused = pause
@@ -19,7 +22,7 @@ class GameManager():
         for e in events:
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_ESCAPE:
-                    ## TODO open option menu
+                    ## TODO open/close if not main menu
                     pass
                 if e.key == pygame.K_RIGHT:
                     self.INPUT["direction"][0] = 1
