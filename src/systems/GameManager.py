@@ -55,10 +55,10 @@ class Entities():
         self.Portal = Portal()
 
 class GameManager():
-    def __init__(self):
+    def __init__(self, start_in_main_menu : bool):
         self.INPUT = {"direction": [0, 0], "mouse": (), "m_pos": ()}
         self.INFO = MainInfo()
-        self.MENUS = Menus(True, False)
+        self.MENUS = Menus(start_in_main_menu, False)
         self.ENTITIES = Entities()
         self.SOUND = SoundManager()
     def EnterNewRoom(self):
