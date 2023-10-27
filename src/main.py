@@ -1,7 +1,6 @@
 import pygame
 # print(pygame.ver)
 from systems.GameManager import GameManager
-from ui.MainMenu import MainMenu
 
 ## Constants
 FPS = 60
@@ -29,7 +28,7 @@ running = True
 delta = 1000/FPS
 
 ## Game logic init
-game_manager = GameManager(False, False, MainMenu(screen))
+game_manager = GameManager()
 
 ## Game loop
 while running:

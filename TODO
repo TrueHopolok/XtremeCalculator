@@ -1,10 +1,11 @@
+- All logic/render = entities
+- Rewrite menu to 2 separete menus
+    + main menu
+    + option menu
 - Add settings (maybe):
     + Sensetivity (optional)
     + Key binds
     + Audio volume
     + Difficulty (if change is confiremed: erase last run)
     + Show fps counter (default off)
-- Rewrite menu to 2 separete menus
-    + main menu
-    + option menu
-- All logic/render = entities
+    

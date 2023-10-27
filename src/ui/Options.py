@@ -1,9 +1,9 @@
 import pygame
 
-class MainMenu():
+class Options():
     def __init__(self):
         pass
-    def Collision(self, player_input : dict):
+    def Collision(self, player_input : bool):
         pass
     def Render(self):
         pass

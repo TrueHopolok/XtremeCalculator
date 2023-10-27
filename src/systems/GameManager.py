@@ -1,16 +1,13 @@
 import pygame
 import random
-from ui.Menu import Menu
+from systems.SoundManager import SoundManager
+from ui.MainMenu import MainMenu
+from ui.Options import Options
 from entities.Player import Player
 from entities.Boss import Boss
 from entities.Button import Button
 from entities.Doors import Doors
 from entities.Portal import Portal
-
-class GameState():
-    def __init__(self, pause, mainmenu):
-        self.Paused = pause
-        self.MainMenu = mainmenu
 
 class MiniBoss():
     def __init__(self):
@@ -18,7 +15,7 @@ class MiniBoss():
         self.Chance = 0
         self.Respawn = 0
 
-class GameInfo():
+class MainInfo():
     def __init__(self):
         self.Loaded = False
         self.Rooms = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
@@ -29,11 +26,25 @@ class GameInfo():
         self.CurrentAnswer = ""
         self.MiniBoss = MiniBoss()
 
-class GameManager():
-    def __init__(self, pause, main_menu, loaded_menu):
-        self.INPUT = {"direction": [0, 0], "mouse": (), "m_pos": ()}
-        self.STATE = GameState(pause, main_menu)
-        self.INFO = GameInfo()
+class Menus():
+    def __init__(self, is_main_menu : bool, is_options : bool):
+        self.IsMainMenu = is_main_menu
+        self.IsOptionsMenu = is_options
+        self.MainMenu = MainMenu()
+        self.OptionsMenu = Options()
+    def Collision(self, player_input : dict):
+        if self.IsMainMenu and (not self.IsOptionsMenu):
+            self.MainMenu.Collision(player_input)
+        elif self.IsOptionsMenu:
+            self.OptionsMenu.Collision(player_input)
+    def Render(self):
+        if self.IsMainMenu:
+            self.MainMenu.Render()
+        if self.OptionsMenu:
+            self.OptionsMenu.Render()
+
+class Entities():
+    def __init__(self):
         self.Player = Player()
         self.PlayerBullets = []
         self.Enemies = []
@@ -42,10 +53,17 @@ class GameManager():
         self.Button = Button()
         self.Doors = Doors()
         self.Portal = Portal()
-        self.MENU = loaded_menu
+
+class GameManager():
+    def __init__(self):
+        self.INPUT = {"direction": [0, 0], "mouse": (), "m_pos": ()}
+        self.INFO = MainInfo()
+        self.MENUS = Menus(True, False)
+        self.ENTITIES = Entities()
+        self.SOUND = SoundManager()
     def EnterNewRoom(self):
-        self.Player.Pos[0] = 1000 - self.Player.Pos[0]
-        self.Player.Pos[1] = 750 - self.Player.Pos[1]
+        self.ENTITIES.Player.Pos[0] = 1000 - self.ENTITIES.Player.Pos[0]
+        self.ENTITIES.Player.Pos[1] = 750 - self.ENTITIES.Player.Pos[1]
         if self.INFO.MiniBoss.Respawn > 0:
             self.INFO.MiniBoss.Respawn -= 1
         elif random.randint(0, 99) < self.INFO.MiniBoss.Chance:
@@ -62,8 +80,7 @@ class GameManager():
         for e in events:
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_ESCAPE:
-                    ## TODO open/close if not main menu
-                    pass
+                    self.MENUS.IsOptionsMenu = False
                 if e.key == pygame.K_RIGHT:
                     self.INPUT["direction"][0] = 1
                 if e.key == pygame.K_LEFT:
@@ -88,8 +105,8 @@ class GameManager():
         # print(self.INPUT) # DEBUG
         
         ## Menu logic
-        if self.STATE.Paused:
-            self.MENU.collision(self.INPUT["m_pos"])
+        if self.MENUS.IsMainMenu or self.MENUS.IsOptionsMenu:
+            self.MENUS.Collision(self.INPUT)
         
         ## Load game
         elif not self.INFO.Loaded:
@@ -127,11 +144,11 @@ class GameManager():
                     self.INFO.Answer = f"{a//b}"
                     self.INFO.Problem = f"{a}//{b}="
             # print(self.INFO.Rooms, "\n", self.INFO.Problem, self.INFO.Answer, sep="") # DEBUG
-            self.Player.Reset()
-            self.PlayerBullets = []
-            self.Enemies = []
-            self.EnemyBullets = []
-            self.Boss.Reset()
+            self.ENTITIES.Player.Reset()
+            self.ENTITIES.PlayerBullets = []
+            self.ENTITIES.Enemies = []
+            self.ENTITIES.EnemyBullets = []
+            self.ENTITIES.Boss.Reset()
             self.INFO.MiniBoss.Chance = 0
             self.INFO.MiniBoss.Rate = self.INFO.ProblemsSolved
             self.INFO.MiniBoss.Respawn = 0
@@ -139,59 +156,58 @@ class GameManager():
         ## Game logic
         else:
             b = 0
-            while b < len(self.PlayerBullets):
-                self.PlayerBullets[b]["pos"] += self.PlayerBullets[b]["dir"]
-                if self.PlayerBullets[b]["pos"][0] * self.PlayerBullets[b]["pos"][1] < 0 or self.PlayerBullets[b]["pos"][0] + self.PlayerBullets[b]["pos"][1] > 1750:
-                    self.PlayerBullets.pop(b)
+            while b < len(self.ENTITIES.PlayerBullets):
+                self.ENTITIES.PlayerBullets[b]["pos"] += self.ENTITIES.PlayerBullets[b]["dir"]
+                if self.ENTITIES.PlayerBullets[b]["pos"][0] * self.ENTITIES.PlayerBullets[b]["pos"][1] < 0 or self.ENTITIES.PlayerBullets[b]["pos"][0] + self.ENTITIES.PlayerBullets[b]["pos"][1] > 1750:
+                    self.ENTITIES.PlayerBullets.pop(b)
                     continue
                 b += 1
             b = 0
-            while b < len(self.EnemyBullets):
-                self.EnemyBullets[b]["pos"] += self.EnemyBullets[b]["dir"]
-                if self.EnemyBullets[b]["pos"][0] * self.EnemyBullets[b]["pos"][1] < 0 or self.EnemyBullets[b]["pos"][0] + self.EnemyBullets[b]["pos"][1] > 1750:
-                    self.EnemyBullets.pop(b)
+            while b < len(self.ENTITIES.EnemyBullets):
+                self.ENTITIES.EnemyBullets[b]["pos"] += self.ENTITIES.EnemyBullets[b]["dir"]
+                if self.ENTITIES.EnemyBullets[b]["pos"][0] * self.ENTITIES.EnemyBullets[b]["pos"][1] < 0 or self.ENTITIES.EnemyBullets[b]["pos"][0] + self.ENTITIES.EnemyBullets[b]["pos"][1] > 1750:
+                    self.ENTITIES.EnemyBullets.pop(b)
                     continue
                 b += 1
-            self.Player.Update(self.INPUT, self.PlayerBullets, self.EnemyBullets)
+            self.ENTITIES.Player.Update(self.INPUT, self.ENTITIES.PlayerBullets, self.ENTITIES.EnemyBullets)
             e = 0
             status = 0
-            while e < len(self.Enemies):
-                status = self.Enemies[e].Update(self.PlayerBullets, self.EnemyBullets)
+            while e < len(self.ENTITIES.Enemies):
+                status = self.ENTITIES.Enemies[e].Update(self.ENTITIES.PlayerBullets, self.ENTITIES.EnemyBullets)
                 if status == -1:
-                    self.Enemies.pop(e)
+                    self.ENTITIES.Enemies.pop(e)
                     continue
                 e += 1
-            if self.Boss.State == "alive":
-                self.Boss.Update(self.PlayerBullets, self.EnemyBullets)
-            if self.Boss.State == "notspawned" and len(self.Enemies) == 0:
-                status = self.Button.Update(self.Player.Pos, self.INPUT, self.INFO.CurrentRoom, self.INFO.Answer, self.INFO.CurrentAnswer)
+            if self.ENTITIES.Boss.State == "alive":
+                self.ENTITIES.Boss.Update(self.ENTITIES.PlayerBullets, self.ENTITIES.EnemyBullets)
+            if self.ENTITIES.Boss.State == "notspawned" and len(self.ENTITIES.Enemies) == 0:
+                status = self.ENTITIES.Button.Update(self.ENTITIES.Player.Pos, self.INPUT, self.INFO.CurrentRoom, self.INFO.Answer, self.INFO.CurrentAnswer)
                 if status != -1:
-                    self.Boss.Spawn()
+                    self.ENTITIES.Boss.Spawn()
                 else:
-                    status = self.Doors.Update(self.Player.Pos, self.INPUT, self.INFO.CurrentRoom, self.INFO.Rooms)
+                    status = self.ENTITIES.Doors.Update(self.ENTITIES.Player.Pos, self.INPUT, self.INFO.CurrentRoom, self.INFO.Rooms)
                     if status != -1:
                         self.INFO.CurrentRoom = status
-            if self.Boss.State == "dead" and len(self.Enemies) == 0:
-                status = self.Portal.Update(self.Player.Pos, self.INPUT)
+            if self.ENTITIES.Boss.State == "dead" and len(self.ENTITIES.Enemies) == 0:
+                status = self.ENTITIES.Portal.Update(self.ENTITIES.Player.Pos, self.INPUT)
                 if status != -1:
                     self.INFO.ProblemsSolved += 1
                     self.INFO.Loaded = False
 
         ## Rendering
-        if not self.STATE.MainMenu:
+        if not self.MENUS.IsMainMenu:
             # walls (write code here)
-            self.Doors.Render(self.INFO.CurrentRoom, self.INFO.Rooms)
-            self.Button.Render(self.INFO.CurrentRoom)
-            self.Portal.Render(self.Boss.State == "dead")
-            for e in self.Enemies:
+            self.ENTITIES.Doors.Render(self.INFO.CurrentRoom, self.INFO.Rooms)
+            self.ENTITIES.Button.Render(self.INFO.CurrentRoom)
+            self.ENTITIES.Portal.Render(self.ENTITIES.Boss.State == "dead")
+            for e in self.ENTITIES.Enemies:
                 e.Render()
-            if self.Boss.State == "alive":
-                self.Boss.Render()
-            self.Player.Render()
+            if self.ENTITIES.Boss.State == "alive":
+                self.ENTITIES.Boss.Render()
+            self.ENTITIES.Player.Render()
             # bullet render (write code here)
-            for b in self.PlayerBullets:
+            for b in self.ENTITIES.PlayerBullets:
                 pass
-            for b in self.EnemyBullets:
+            for b in self.ENTITIES.EnemyBullets:
                 pass
-        if self.STATE.Paused:
-            self.MENU.render()
+        self.MENUS.Render()
