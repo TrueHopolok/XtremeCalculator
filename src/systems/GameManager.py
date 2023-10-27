@@ -84,7 +84,7 @@ class GameManager():
         for e in events:
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_ESCAPE:
-                    self.MENUS.IsOptionsMenu = False
+                    self.MENUS.IsOptionsMenu = not self.MENUS.IsOptionsMenu
                 if e.key == pygame.K_RIGHT:
                     self.INPUT["direction"][0] = 1
                 if e.key == pygame.K_LEFT:
