@@ -2,8 +2,10 @@ import pygame
 
 class Player():
     def __init__(self):
-        pass
+        self.Pos = [50,50]
     def Reset(self):
         pass
-    def Update(self, _input, _player_bullets, _enemy_bullets):
+    def Update(self, player_input : dict, player_bullets : list, enemy_bullets : list):
+        pass
+    def Render(self):
         pass
