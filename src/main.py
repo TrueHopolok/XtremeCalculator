@@ -21,7 +21,7 @@ pygame.mouse.set_cursor(*pygame.cursors.broken_x)
 
 ## Fonts init
 pygame.font.init()
-Fps_Font = pygame.font.SysFont('Cascadia Code', 25)
+Fps_Font = pygame.font.SysFont('Cascadia Code', 25, False)
 
 ## FPS init
 clock = pygame.time.Clock()
@@ -56,7 +56,7 @@ while running:
     
     ## FPS counter
     if status != -1:
-        screen.blit(Fps_Font.render(f"{int(clock.get_fps())}", True, (0, 255, 0)), (5, 5))
+        screen.blit(Fps_Font.render(f"{int(clock.get_fps())}", True, (0, 255, 0)), (975, 5))
     
     ## Screen update
     pygame.display.update()

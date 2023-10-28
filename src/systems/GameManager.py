@@ -43,8 +43,8 @@ class Menus():
             self.OptionsMenu.Render()
 
 class Entities():
-    def __init__(self):
-        self.Player = Player()
+    def __init__(self, game_screen):
+        self.Player = Player(game_screen)
         self.PlayerBullets = []
         self.Enemies = []
         self.EnemyBullets = []
@@ -59,7 +59,7 @@ class GameManager():
         self.INPUT = {"direction": [0, 0], "mouse": (False, False, False), "m_pos": (0, 0), "lmb_just": False}
         self.INFO = MainInfo()
         self.MENUS = Menus(game_screen, start_in_main_menu, False)
-        self.ENTITIES = Entities()
+        self.ENTITIES = Entities(game_screen)
         if show_fps:
             self.STATUS = 1
         else:
@@ -67,6 +67,8 @@ class GameManager():
         self.RENDERED = []
         for i in range(11):
             self.RENDERED.append(pygame.transform.scale(pygame.image.load(f"../img/rooms/{i}.png"), (1000, 750)))
+        self.RENDERED.append(pygame.transform.scale(pygame.image.load(f"../img/mainmenu_bg2.png"), (1000, 750)))
+        self.RENDERED.append(pygame.font.SysFont("Cascadia Code", 25, False))
     def EnterNewRoom(self):
         self.ENTITIES.Player.Pos[0] = 1000 - self.ENTITIES.Player.Pos[0]
         self.ENTITIES.Player.Pos[1] = 750 - self.ENTITIES.Player.Pos[1]
@@ -169,7 +171,10 @@ class GameManager():
                         a, b = b, a
                     self.INFO.Answer = f"{a//b}"
                     self.INFO.Problem = f"{a}//{b}="
-            self.ENTITIES.Player.Reset()
+            self.ENTITIES.Player.Pos = [460,335]
+            self.ENTITIES.Player.Health = 3
+            self.ENTITIES.Player.Invulnerable = 60
+            self.ENTITIES.Player.Reload = 60
             self.ENTITIES.PlayerBullets = []
             self.ENTITIES.Enemies = []
             self.ENTITIES.EnemyBullets = []
@@ -182,24 +187,35 @@ class GameManager():
         else:
             b = 0
             while b < len(self.ENTITIES.PlayerBullets):
-                self.ENTITIES.PlayerBullets[b]["pos"] += self.ENTITIES.PlayerBullets[b]["dir"]
-                if self.ENTITIES.PlayerBullets[b]["pos"][0] * self.ENTITIES.PlayerBullets[b]["pos"][1] < 0 or self.ENTITIES.PlayerBullets[b]["pos"][0] + self.ENTITIES.PlayerBullets[b]["pos"][1] > 1750:
+                self.ENTITIES.PlayerBullets[b]["pos"][0] = max(70, min(840, self.ENTITIES.PlayerBullets[b]["pos"][0] + self.ENTITIES.PlayerBullets[b]["pos"][0] * self.ENTITIES.PlayerBullets[b]["dir"][0]))
+                self.ENTITIES.PlayerBullets[b]["pos"][1] = max(40, min(575, self.ENTITIES.PlayerBullets[b]["pos"][1] + self.ENTITIES.PlayerBullets[b]["pos"][1] * self.ENTITIES.PlayerBullets[b]["dir"][1]))
+                if self.ENTITIES.PlayerBullets[b]["pos"][0] == 70 or self.ENTITIES.PlayerBullets[b]["pos"][0] == 840:
+                    self.ENTITIES.PlayerBullets.pop(b)
+                    continue
+                if self.ENTITIES.PlayerBullets[b]["pos"][1] == 40 or self.ENTITIES.PlayerBullets[b]["pos"][1] == 575:
                     self.ENTITIES.PlayerBullets.pop(b)
                     continue
                 b += 1
             b = 0
             while b < len(self.ENTITIES.EnemyBullets):
-                self.ENTITIES.EnemyBullets[b]["pos"] += self.ENTITIES.EnemyBullets[b]["dir"]
-                if self.ENTITIES.EnemyBullets[b]["pos"][0] * self.ENTITIES.EnemyBullets[b]["pos"][1] < 0 or self.ENTITIES.EnemyBullets[b]["pos"][0] + self.ENTITIES.EnemyBullets[b]["pos"][1] > 1750:
+                self.ENTITIES.EnemyBullets[b]["pos"][0] = max(70, min(840, self.ENTITIES.EnemyBullets[b]["pos"][0] + self.ENTITIES.EnemyBullets[b]["pos"][0] * self.ENTITIES.EnemyBullets[b]["dir"][0]))
+                self.ENTITIES.EnemyBullets[b]["pos"][1] = max(40, min(575, self.ENTITIES.EnemyBullets[b]["pos"][1] + self.ENTITIES.EnemyBullets[b]["pos"][1] * self.ENTITIES.EnemyBullets[b]["dir"][1]))
+                if self.ENTITIES.EnemyBullets[b]["pos"][0] == 70 or self.ENTITIES.EnemyBullets[b]["pos"][0] == 840:
+                    self.ENTITIES.EnemyBullets.pop(b)
+                    continue
+                if self.ENTITIES.EnemyBullets[b]["pos"][1] == 40 or self.ENTITIES.EnemyBullets[b]["pos"][1] == 575:
                     self.ENTITIES.EnemyBullets.pop(b)
                     continue
                 b += 1
-            self.ENTITIES.Player.Update(self.INPUT, self.ENTITIES.PlayerBullets, self.ENTITIES.EnemyBullets)
+            status = self.ENTITIES.Player.Update(self.INPUT, self.ENTITIES.PlayerBullets, self.ENTITIES.EnemyBullets)
+            if status != -1:
+                self.MENUS.IsMainMenu = True
+                self.INFO.Loaded = False
+                return self.STATUS
             e = 0
-            status = 0
             while e < len(self.ENTITIES.Enemies):
                 status = self.ENTITIES.Enemies[e].Update(self.ENTITIES.PlayerBullets, self.ENTITIES.EnemyBullets)
-                if status == -1:
+                if status != -1:
                     self.ENTITIES.Enemies.pop(e)
                     continue
                 e += 1
@@ -236,8 +252,9 @@ class GameManager():
             for b in self.ENTITIES.EnemyBullets:
                 pass
         else:
-            # main menu bg
+            self.SCREEN.blit(self.RENDERED[11], (0, 0))
             pass
+        self.SCREEN.blit(self.RENDERED[12].render(f"SCORE: {self.INFO.ProblemsSolved}", False, (0, 255, 0)), (5, 5))
         self.MENUS.Render()
 
         return self.STATUS

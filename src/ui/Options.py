@@ -7,7 +7,7 @@ class Options():
         self.MuteButton = dict()
         self.FpsCounter = dict()
         self.Title["pos"] = (400, 200)
-        self.Title["obj"] = pygame.font.SysFont("Times New Roman", 40).render("Options:", True, (255, 255, 255))
+        self.Title["obj"] = pygame.font.SysFont("Times New Roman", 40, True).render("Options:", True, (255, 255, 255))
         self.MuteButton["pos"] = (400, 300)
         self.MuteButton["size"] = (200, 100)
         self.MuteButton["obj"] = pygame.transform.scale(pygame.image.load("../img/missing_texture.png"), self.MuteButton["size"])
