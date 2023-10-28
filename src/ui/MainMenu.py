@@ -31,7 +31,7 @@ class MainMenu():
         self.Guide3["pos"] = (50, 690)
         self.Guide3["obj"] = pygame.font.SysFont("Arial", 20).render("Your goal is to solve as many math problems as possible while not dying", True, (255, 255, 255))
     def Collision(self, player_input : dict):
-        if player_input["mouse"][0]:
+        if player_input["lmb_just"]:
             if player_input["m_pos"][0] > self.StartButton["pos"][0] and player_input["m_pos"][0] < self.StartButton["pos"][0] + self.StartButton["size"][0]:
                 if player_input["m_pos"][1] > self.StartButton["pos"][1] and player_input["m_pos"][1] < self.StartButton["pos"][1] + self.StartButton["size"][1]:
                     return 1

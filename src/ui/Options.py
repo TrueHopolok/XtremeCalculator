@@ -7,7 +7,7 @@ class Options():
         self.MuteButton = dict()
         self.FpsCounter = dict()
         self.Title["pos"] = (400, 200)
-        self.Title["obj"] = pygame.font.SysFont("Times New Roman", 40).render("Options", True, (255, 255, 255))
+        self.Title["obj"] = pygame.font.SysFont("Times New Roman", 40).render("Options:", True, (255, 255, 255))
         self.MuteButton["pos"] = (400, 300)
         self.MuteButton["size"] = (200, 100)
         self.MuteButton["obj"] = pygame.transform.scale(pygame.image.load("../img/missing_texture.png"), self.MuteButton["size"])
@@ -15,7 +15,7 @@ class Options():
         self.FpsCounter["size"] = (200, 100)
         self.FpsCounter["obj"] = pygame.transform.scale(pygame.image.load("../img/missing_texture.png"), self.FpsCounter["size"])
     def Collision(self, player_input : dict):
-        if player_input["mouse"][0]:
+        if player_input["lmb_just"]:
             if player_input["m_pos"][0] > self.MuteButton["pos"][0] and player_input["m_pos"][0] < self.MuteButton["pos"][0] + self.MuteButton["size"][0]:
                 if player_input["m_pos"][1] > self.MuteButton["pos"][1] and player_input["m_pos"][1] < self.MuteButton["pos"][1] + self.MuteButton["size"][1]:
                     return 2

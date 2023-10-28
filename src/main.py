@@ -5,7 +5,7 @@ from systems.GameManager import GameManager
 ## Constants
 FPS = 60
 HEIGHT = 1000
-WIDTH = 800
+WIDTH = 750
 TITLE = "Xtreme Calculator"
 ICON = "../img/icon.png"
 # MUSIC = ""
@@ -36,7 +36,7 @@ pygame.mixer_music.set_volume(50)
 '''
 
 ## Game logic init
-game_manager = GameManager(screen, True)
+game_manager = GameManager(screen, True, True)
 
 ## Game loop
 while running:
@@ -52,10 +52,11 @@ while running:
     screen.fill((0, 0, 0))
     
     ## Game logic and render update
-    game_manager.update(events)
+    status = game_manager.update(events)
     
     ## FPS counter
-    screen.blit(Fps_Font.render(f"{int(clock.get_fps())}", True, (0, 255, 0)), (5, 5))
+    if status != -1:
+        screen.blit(Fps_Font.render(f"{int(clock.get_fps())}", True, (0, 255, 0)), (5, 5))
     
     ## Screen update
     pygame.display.update()

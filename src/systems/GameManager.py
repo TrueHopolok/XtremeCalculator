@@ -54,12 +54,19 @@ class Entities():
         self.Portal = Portal()
 
 class GameManager():
-    def __init__(self, game_screen, start_in_main_menu : bool):
+    def __init__(self, game_screen, start_in_main_menu : bool, show_fps : bool):
         self.SCREEN = game_screen
-        self.INPUT = {"direction": [0, 0], "mouse": (), "m_pos": ()}
+        self.INPUT = {"direction": [0, 0], "mouse": (False, False, False), "m_pos": (0, 0), "lmb_just": False}
         self.INFO = MainInfo()
         self.MENUS = Menus(game_screen, start_in_main_menu, False)
         self.ENTITIES = Entities()
+        if show_fps:
+            self.STATUS = 1
+        else:
+            self.STATUS = -1 
+        self.RENDERED = []
+        for i in range(11):
+            self.RENDERED.append(pygame.transform.scale(pygame.image.load(f"../img/rooms/{i}.png"), (1000, 750)))
     def EnterNewRoom(self):
         self.ENTITIES.Player.Pos[0] = 1000 - self.ENTITIES.Player.Pos[0]
         self.ENTITIES.Player.Pos[1] = 750 - self.ENTITIES.Player.Pos[1]
@@ -79,7 +86,12 @@ class GameManager():
         # spawn enemies with random pos but 100 pixel away from screen 
     def update(self, events):
         ## Input handle
+        prev = self.INPUT["mouse"][0]
         self.INPUT["mouse"] = pygame.mouse.get_pressed(3)
+        if prev == self.INPUT["mouse"][0]:
+            self.INPUT["lmb_just"] = False
+        else:
+            self.INPUT["lmb_just"] = self.INPUT["mouse"][0]
         self.INPUT["m_pos"] = pygame.mouse.get_pos()
         for e in events:
             if e.type == pygame.KEYDOWN:
@@ -112,9 +124,9 @@ class GameManager():
             status = self.MENUS.Collision(self.INPUT)
             match status:
                 case 3:
-                    print("3")
+                    self.STATUS = -self.STATUS
                 case 2:
-                    print("2")
+                    pygame.mixer.music.set_volume(50 - pygame.mixer.music.get_volume())
                 case 1:
                     self.MENUS.IsMainMenu = False
                     self.INFO.Loaded = False
@@ -129,7 +141,7 @@ class GameManager():
             self.INFO.CurrentRoom = 0
             for i in range(1, 12):
                 j = random.randint(0, i)
-                if self.INFO.Rooms[j] == 0:
+                if j == self.INFO.CurrentRoom:
                     self.INFO.CurrentRoom = i
                 self.INFO.Rooms[i], self.INFO.Rooms[j] = self.INFO.Rooms[j], i
             match random.randint(0, 4):
@@ -209,7 +221,7 @@ class GameManager():
 
         ## Rendering
         if not self.MENUS.IsMainMenu:
-            # walls (write code here)
+            self.SCREEN.blit(self.RENDERED[self.INFO.Rooms[self.INFO.CurrentRoom]], (0, 0))
             self.ENTITIES.Doors.Render(self.INFO.CurrentRoom, self.INFO.Rooms)
             self.ENTITIES.Button.Render(self.INFO.CurrentRoom)
             self.ENTITIES.Portal.Render(self.ENTITIES.Boss.State == "dead")
@@ -223,4 +235,9 @@ class GameManager():
                 pass
             for b in self.ENTITIES.EnemyBullets:
                 pass
+        else:
+            # main menu bg
+            pass
         self.MENUS.Render()
+
+        return self.STATUS
