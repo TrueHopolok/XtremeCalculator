@@ -73,7 +73,7 @@ class Doors():
             case 3:
                 return prev<9
             case -3:
-                return prev>3
+                return prev>2
             case _:
                 return False
     def Collide(self, r1 : list, s1 : list, r2 : list, s2 : list):

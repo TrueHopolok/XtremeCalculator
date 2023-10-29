@@ -8,9 +8,9 @@ class Player():
         self.Speed = 4
         self.Health = 6
         self.Invulnerable = 60
-        self.Reload = 30
+        self.Reload = 20
         self.Rampage = 0
-        self.Upgrade = 30
+        self.Upgrade = 20
         self.Direction = [0, 0]
         self.Aim = [0, 0]
         self.Animations = []
@@ -35,24 +35,26 @@ class Player():
         if enemy_killed != 0:
             self.Reload = 0
             self.Rampage = 300
-            self.Upgrade = max(6, min(30, self.Upgrade - 4))
+            self.Upgrade = max(4, min(20, self.Upgrade - 4))
         elif self.Rampage != 0:
             self.Rampage -= 1
-        elif self.Upgrade != 30:
-            self.Upgrade = max(6, min(30, self.Upgrade + 4))
-            self.Rampage = 150
+        elif self.Upgrade != 20:
+            self.Upgrade = max(4, min(20, self.Upgrade + 4))
+            self.Rampage = 120
         # shoot
         if self.Reload != 0:
             self.Reload -= 1
         elif player_input["mouse"][0]:
             self.Reload = self.Upgrade
-            vector = [player_input["m_pos"][0] - self.Pos[0], player_input["m_pos"][1] - self.Pos[1]]
+            vector = [player_input["m_pos"][0] - self.Pos[0] - 35, player_input["m_pos"][1] - self.Pos[1] - 40]
             magnitude = math.sqrt(vector[0] * vector[0] + vector[1] * vector[1])
-            self.Aim[0] = vector[0] / magnitude
-            self.Aim[1] = vector[1] / magnitude
-            vector[0] = self.Aim[0] * 5
-            vector[1] = self.Aim[1] * 5
-            player_bullets.append({"pos":self.Pos.copy(), "dir":vector})
+            vector[0] /= magnitude
+            vector[1] /= magnitude
+            self.Aim[0] = vector[0]
+            self.Aim[1] = vector[1]
+            vector[0] *= 5
+            vector[1] *= 5
+            player_bullets.append({"pos": [self.Pos[0] + 35 + self.Aim[0], self.Pos[1] + 40 + self.Aim[1]], "dir":vector})
         # collide
         if self.Invulnerable != 0:
             self.Invulnerable -= 1
