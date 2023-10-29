@@ -19,6 +19,7 @@ class MainInfo():
         self.Loaded = False
         self.Rooms = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
         self.CurrentRoom = 0
+        self.EnemiesKilled = 0
         self.ProblemsSolved = 0
         self.Problem = ""
         self.Answer = ""
@@ -26,11 +27,11 @@ class MainInfo():
         self.MiniBoss = MiniBoss()
 
 class Menus():
-    def __init__(self, screen, is_main_menu : bool, is_options : bool):
+    def __init__(self, screen, is_main_menu : bool, is_options : bool, show_fps : bool):
         self.IsMainMenu = is_main_menu
         self.IsOptionsMenu = is_options
         self.MainMenu = MainMenu(screen)
-        self.OptionsMenu = Options(screen)
+        self.OptionsMenu = Options(screen, show_fps)
     def Collision(self, player_input : dict):
         if self.IsMainMenu and (not self.IsOptionsMenu):
             return self.MainMenu.Collision(player_input)
@@ -58,7 +59,7 @@ class GameManager():
         self.SCREEN = game_screen
         self.INPUT = {"direction": [0, 0], "mouse": (False, False, False), "m_pos": (0, 0), "lmb_just": False}
         self.INFO = MainInfo()
-        self.MENUS = Menus(game_screen, start_in_main_menu, False)
+        self.MENUS = Menus(game_screen, start_in_main_menu, False, show_fps)
         self.ENTITIES = Entities(game_screen)
         if show_fps:
             self.STATUS = 1
@@ -67,8 +68,10 @@ class GameManager():
         self.RENDERED = []
         for i in range(11):
             self.RENDERED.append(pygame.transform.scale(pygame.image.load(f"../img/rooms/{i}.png"), (1000, 750)))
-        self.RENDERED.append(pygame.transform.scale(pygame.image.load(f"../img/mainmenu_bg2.png"), (1000, 750)))
+        self.RENDERED.append(pygame.transform.scale(pygame.image.load(f"../img/ui/mainmenu_bg2.png"), (1000, 750)))
         self.RENDERED.append(pygame.font.SysFont("Cascadia Code", 25, False))
+        self.RENDERED.append(pygame.transform.scale(pygame.image.load(f"../img/bullets/player.png"), (20, 20)))
+        self.RENDERED.append(pygame.transform.scale(pygame.image.load(f"../img/bullets/enemy.png"), (20, 20)))
     def EnterNewRoom(self):
         self.ENTITIES.Player.Pos[0] = 1000 - self.ENTITIES.Player.Pos[0]
         self.ENTITIES.Player.Pos[1] = 750 - self.ENTITIES.Player.Pos[1]
@@ -133,6 +136,7 @@ class GameManager():
                     self.MENUS.IsMainMenu = False
                     self.INFO.Loaded = False
                     self.INFO.ProblemsSolved = 0
+                    self.INFO.EnemiesKilled = 0
                 case _:
                     pass
         
@@ -172,9 +176,11 @@ class GameManager():
                     self.INFO.Answer = f"{a//b}"
                     self.INFO.Problem = f"{a}//{b}="
             self.ENTITIES.Player.Pos = [460,335]
-            self.ENTITIES.Player.Health = 3
+            self.ENTITIES.Player.Health = 6
             self.ENTITIES.Player.Invulnerable = 60
             self.ENTITIES.Player.Reload = 60
+            self.ENTITIES.Player.Rampage = 1
+            self.ENTITIES.Player.Upgrade = 30
             self.ENTITIES.PlayerBullets = []
             self.ENTITIES.Enemies = []
             self.ENTITIES.EnemyBullets = []
@@ -187,38 +193,41 @@ class GameManager():
         else:
             b = 0
             while b < len(self.ENTITIES.PlayerBullets):
-                self.ENTITIES.PlayerBullets[b]["pos"][0] = max(70, min(840, self.ENTITIES.PlayerBullets[b]["pos"][0] + self.ENTITIES.PlayerBullets[b]["pos"][0] * self.ENTITIES.PlayerBullets[b]["dir"][0]))
-                self.ENTITIES.PlayerBullets[b]["pos"][1] = max(40, min(575, self.ENTITIES.PlayerBullets[b]["pos"][1] + self.ENTITIES.PlayerBullets[b]["pos"][1] * self.ENTITIES.PlayerBullets[b]["dir"][1]))
-                if self.ENTITIES.PlayerBullets[b]["pos"][0] == 70 or self.ENTITIES.PlayerBullets[b]["pos"][0] == 840:
+                self.ENTITIES.PlayerBullets[b]["pos"][0] = max(70, min(900, self.ENTITIES.PlayerBullets[b]["pos"][0] + self.ENTITIES.PlayerBullets[b]["dir"][0]))
+                self.ENTITIES.PlayerBullets[b]["pos"][1] = max(40, min(650, self.ENTITIES.PlayerBullets[b]["pos"][1] + self.ENTITIES.PlayerBullets[b]["dir"][1]))
+                if self.ENTITIES.PlayerBullets[b]["pos"][0] == 70 or self.ENTITIES.PlayerBullets[b]["pos"][0] == 900:
                     self.ENTITIES.PlayerBullets.pop(b)
                     continue
-                if self.ENTITIES.PlayerBullets[b]["pos"][1] == 40 or self.ENTITIES.PlayerBullets[b]["pos"][1] == 575:
+                if self.ENTITIES.PlayerBullets[b]["pos"][1] == 40 or self.ENTITIES.PlayerBullets[b]["pos"][1] == 650:
                     self.ENTITIES.PlayerBullets.pop(b)
                     continue
                 b += 1
             b = 0
             while b < len(self.ENTITIES.EnemyBullets):
-                self.ENTITIES.EnemyBullets[b]["pos"][0] = max(70, min(840, self.ENTITIES.EnemyBullets[b]["pos"][0] + self.ENTITIES.EnemyBullets[b]["pos"][0] * self.ENTITIES.EnemyBullets[b]["dir"][0]))
-                self.ENTITIES.EnemyBullets[b]["pos"][1] = max(40, min(575, self.ENTITIES.EnemyBullets[b]["pos"][1] + self.ENTITIES.EnemyBullets[b]["pos"][1] * self.ENTITIES.EnemyBullets[b]["dir"][1]))
-                if self.ENTITIES.EnemyBullets[b]["pos"][0] == 70 or self.ENTITIES.EnemyBullets[b]["pos"][0] == 840:
+                self.ENTITIES.EnemyBullets[b]["pos"][0] = max(70, min(900, self.ENTITIES.EnemyBullets[b]["pos"][0] + self.ENTITIES.EnemyBullets[b]["pos"][0] * self.ENTITIES.EnemyBullets[b]["dir"][0]))
+                self.ENTITIES.EnemyBullets[b]["pos"][1] = max(40, min(650, self.ENTITIES.EnemyBullets[b]["pos"][1] + self.ENTITIES.EnemyBullets[b]["pos"][1] * self.ENTITIES.EnemyBullets[b]["dir"][1]))
+                if self.ENTITIES.EnemyBullets[b]["pos"][0] == 70 or self.ENTITIES.EnemyBullets[b]["pos"][0] == 900:
                     self.ENTITIES.EnemyBullets.pop(b)
                     continue
-                if self.ENTITIES.EnemyBullets[b]["pos"][1] == 40 or self.ENTITIES.EnemyBullets[b]["pos"][1] == 575:
+                if self.ENTITIES.EnemyBullets[b]["pos"][1] == 40 or self.ENTITIES.EnemyBullets[b]["pos"][1] == 650:
                     self.ENTITIES.EnemyBullets.pop(b)
                     continue
                 b += 1
-            status = self.ENTITIES.Player.Update(self.INPUT, self.ENTITIES.PlayerBullets, self.ENTITIES.EnemyBullets)
-            if status != -1:
-                self.MENUS.IsMainMenu = True
-                self.INFO.Loaded = False
-                return self.STATUS
             e = 0
+            enemieskilled = 0
             while e < len(self.ENTITIES.Enemies):
                 status = self.ENTITIES.Enemies[e].Update(self.ENTITIES.PlayerBullets, self.ENTITIES.EnemyBullets)
                 if status != -1:
                     self.ENTITIES.Enemies.pop(e)
+                    enemieskilled += 1
                     continue
                 e += 1
+            self.INFO.EnemiesKilled += enemieskilled
+            status = self.ENTITIES.Player.Update(self.INPUT, self.ENTITIES.PlayerBullets, self.ENTITIES.EnemyBullets, enemieskilled)
+            if status != -1:
+                self.MENUS.IsMainMenu = True
+                self.INFO.Loaded = False
+                return self.STATUS
             if self.ENTITIES.Boss.State == "alive":
                 self.ENTITIES.Boss.Update(self.ENTITIES.PlayerBullets, self.ENTITIES.EnemyBullets)
             if self.ENTITIES.Boss.State == "notspawned" and len(self.ENTITIES.Enemies) == 0:
@@ -245,16 +254,15 @@ class GameManager():
                 e.Render()
             if self.ENTITIES.Boss.State == "alive":
                 self.ENTITIES.Boss.Render()
-            self.ENTITIES.Player.Render()
             # bullet render (write code here)
             for b in self.ENTITIES.PlayerBullets:
-                pass
+                self.SCREEN.blit(self.RENDERED[13], b["pos"])
             for b in self.ENTITIES.EnemyBullets:
-                pass
+                self.SCREEN.blit(self.RENDERED[14], b["pos"])
+            self.ENTITIES.Player.Render()
         else:
             self.SCREEN.blit(self.RENDERED[11], (0, 0))
-            pass
-        self.SCREEN.blit(self.RENDERED[12].render(f"SCORE: {self.INFO.ProblemsSolved}", False, (0, 255, 0)), (5, 5))
+        self.SCREEN.blit(self.RENDERED[12].render(f"SCORE: {self.INFO.ProblemsSolved*100+self.INFO.EnemiesKilled}", False, (0, 255, 0)), (5, 5))
         self.MENUS.Render()
 
         return self.STATUS

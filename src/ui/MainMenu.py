@@ -14,14 +14,13 @@ import pygame
 class MainMenu():
     def __init__(self, screen):
         self.SCREEN = screen
-        self.Title = dict()
         self.StartButton = dict()
         self.Guide1 = dict()
         self.Guide2 = dict()
         self.Guide3 = dict()
         self.StartButton["pos"] = (750, 635)
         self.StartButton["size"] = (200, 100)
-        self.StartButton["obj"] = pygame.transform.scale(pygame.image.load("../img/startbutton.png"), self.StartButton["size"])
+        self.StartButton["obj"] = pygame.transform.scale(pygame.image.load("../img/ui/startbutton.png"), self.StartButton["size"])
         self.Guide1["pos"] = (10, 670)
         self.Guide1["obj"] = pygame.font.SysFont("Arial", 20).render("To aim move mouse | To shoot use left mouse button", True, (255, 255, 255))
         self.Guide2["pos"] = (10, 690)
