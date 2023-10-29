@@ -22,13 +22,14 @@ class Button():
             return -1
         if self.Pressed:
             return -1
-        player_size = [80, 80]
+        player_size = [100, 100]
         if self.Collide(player_pos, player_size, self.Yes["pos"], self.Size):
             self.Pressed = True
             if current_room == 10:
                 return 1
             if len(answer["current"]) < 9:
                 answer["current"] += str(current_room)
+            return -1
         if self.Collide(player_pos, player_size, self.No["pos"], self.Size):
             self.Pressed = True
             if len(answer["current"]) > 0:

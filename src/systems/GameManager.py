@@ -48,10 +48,10 @@ class Entities():
         self.PlayerBullets = []
         self.Enemies = []
         self.EnemyBullets = []
-        self.Boss = Boss()
+        self.Boss = Boss(game_screen)
         self.Button = Button(game_screen)
         self.Doors = Doors(game_screen)
-        self.Portal = Portal()
+        self.Portal = Portal(game_screen)
 
 class GameManager():
     def __init__(self, game_screen, start_in_main_menu : bool, show_fps : bool):
@@ -100,27 +100,27 @@ class GameManager():
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_ESCAPE:
                     self.MENUS.IsOptionsMenu = not self.MENUS.IsOptionsMenu
-                if e.key == pygame.K_RIGHT:
+                if e.key == pygame.K_d:
                     self.INPUT["direction"][0] = 1
-                if e.key == pygame.K_LEFT:
+                if e.key == pygame.K_a:
                     self.INPUT["direction"][0] = -1
-                if e.key == pygame.K_DOWN:
+                if e.key == pygame.K_s:
                     self.INPUT["direction"][1] = 1
-                if e.key == pygame.K_UP:
+                if e.key == pygame.K_w:
                     self.INPUT["direction"][1] = -1
                 if e.key == pygame.K_SPACE:
                     self.INPUT["space"] = True
             elif e.type == pygame.KEYUP:
-                if e.key == pygame.K_RIGHT:
+                if e.key == pygame.K_d:
                     if self.INPUT["direction"][0] != -1:
                         self.INPUT["direction"][0] = 0
-                if e.key == pygame.K_LEFT:
+                if e.key == pygame.K_a:
                     if self.INPUT["direction"][0] != 1:
                         self.INPUT["direction"][0] = 0
-                if e.key == pygame.K_DOWN:
+                if e.key == pygame.K_s:
                     if self.INPUT["direction"][1] != -1:
                         self.INPUT["direction"][1] = 0
-                if e.key == pygame.K_UP:
+                if e.key == pygame.K_w:
                     if self.INPUT["direction"][1] != 1:
                         self.INPUT["direction"][1] = 0
                 if e.key == pygame.K_SPACE:
@@ -236,7 +236,7 @@ class GameManager():
                 self.INFO.Loaded = False
                 return self.STATUS
             if self.ENTITIES.Boss.State == "alive":
-                self.ENTITIES.Boss.Update(self.ENTITIES.PlayerBullets, self.ENTITIES.EnemyBullets)
+                self.ENTITIES.Boss.Update(self.ENTITIES.Player.Pos, self.ENTITIES.PlayerBullets, self.ENTITIES.EnemyBullets)
             if self.ENTITIES.Boss.State == "notspawned" and len(self.ENTITIES.Enemies) == 0:
                 status = self.ENTITIES.Button.Update(self.ENTITIES.Player.Pos, self.INPUT, self.INFO.Rooms[self.INFO.CurrentRoom], self.INFO.Answer)
                 if status != -1:
