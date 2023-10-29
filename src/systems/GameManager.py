@@ -2,6 +2,7 @@ import pygame
 import random
 from ui.MainMenu import MainMenu
 from ui.Options import Options
+from entities.Enemy import Enemy
 from entities.Player import Player
 from entities.Boss import Boss
 from entities.Button import Button
@@ -24,6 +25,7 @@ class MainInfo():
         self.Problem = ""
         self.Answer = {"current":"", "final":""}
         self.MiniBoss = MiniBoss()
+        self.RoomsClearedOnFloor = 0
 
 class Menus():
     def __init__(self, screen, is_main_menu : bool, is_options : bool, show_fps : bool):
@@ -72,6 +74,7 @@ class GameManager():
         self.RENDERED.append(pygame.transform.scale(pygame.image.load(f"../img/bullets/player.png"), (20, 20)))
         self.RENDERED.append(pygame.transform.scale(pygame.image.load(f"../img/bullets/enemy.png"), (20, 20)))
     def EnterNewRoom(self):
+        self.INFO.RoomsClearedOnFloor += 1
         self.ENTITIES.EnemyBullets = []
         self.ENTITIES.PlayerBullets = []
         self.ENTITIES.Enemies = []
@@ -79,13 +82,17 @@ class GameManager():
             return
         if self.INFO.MiniBoss.Respawn > 0:
             self.INFO.MiniBoss.Respawn -= 1
-        elif random.randint(0, 99) < self.INFO.MiniBoss.Chance:
+        elif random.randint(0, 99) >= self.INFO.MiniBoss.Chance:
             self.INFO.MiniBoss.Chance += self.INFO.MiniBoss.Rate
         else:
             self.INFO.MiniBoss.Chance = 0
             self.INFO.MiniBoss.Respawn = 3
-            # spawn miniboss in center of the room
-        # spawn enemies with random pos but 100 pixel away from screen 
+            self.ENTITIES.Enemies.append(Enemy(self.SCREEN, random.randint(7, 9)))
+        amount = max(5, min(min(40, 10 + self.INFO.ProblemsSolved * 5), self.INFO.RoomsClearedOnFloor * 3 + self.INFO.ProblemsSolved * 5))
+        for i in range(amount):
+            self.ENTITIES.Enemies.append(Enemy(self.SCREEN, random.randint(1, 100)%max(1, min(8, self.INFO.ProblemsSolved)) + 1))
+            
+        
     def update(self, events):
         ## Input handle
         prev = self.INPUT["mouse"][0]
@@ -151,6 +158,7 @@ class GameManager():
             self.INFO.Loaded = True
             self.INFO.Rooms[0] = 0
             self.INFO.CurrentRoom = 0
+            self.INFO.RoomsClearedOnFloor = 0
             self.INFO.Answer["current"] = ""
             for i in range(1, 12):
                 j = random.randint(0, i)
@@ -223,7 +231,7 @@ class GameManager():
             e = 0
             enemieskilled = 0
             while e < len(self.ENTITIES.Enemies):
-                status = self.ENTITIES.Enemies[e].Update(self.ENTITIES.PlayerBullets, self.ENTITIES.EnemyBullets)
+                status = self.ENTITIES.Enemies[e].Update(self.ENTITIES.Player.Pos, self.ENTITIES.PlayerBullets, self.ENTITIES.EnemyBullets)
                 if status != -1:
                     self.ENTITIES.Enemies.pop(e)
                     enemieskilled += 1

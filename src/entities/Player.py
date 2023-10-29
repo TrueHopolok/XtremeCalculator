@@ -59,15 +59,20 @@ class Player():
         if self.Invulnerable != 0:
             self.Invulnerable -= 1
         else:
+            bullet_size = [20, 20]
             b = 0
             for b in range(len(enemy_bullets)):
-                if (self.Pos[0] + 10 < enemy_bullets["pos"][0] and enemy_bullets["pos"] < self.Pos[0] + 70) or (self.Pos[0] + 10 < enemy_bullets["pos"][0] + 32 and enemy_bullets["pos"] + 32 < self.Pos[0] + 70):
-                    if (self.Pos[1] + 10 < enemy_bullets["pos"][1] and enemy_bullets["pos"] < self.Pos[1] + 70) or (self.Pos[1] + 10 < enemy_bullets["pos"][1] + 32 and enemy_bullets["pos"] + 32 < self.Pos[1] + 70): 
-                        enemy_bullets.pop(b)
-                        self.Invulnerable = 60
-                        break
+                if self.Collide(self.Pos, [70, 70], enemy_bullets[b]["pos"], bullet_size):
+                    enemy_bullets.pop(b)
+                    self.Health -= 1
+                    self.Invulnerable = 60
+                    break
                 b += 1
         return -1
+    def Collide(self, r1 : list, s1 : list, r2 : list, s2 : list):
+        if (r1[0] < r2[0] and r2[0] < r1[0] + s1[0]) or (r1[0] < r2[0] + s2[0] and r2[0] + s2[0] < r1[0] + s1[0]):
+            return (r1[1] < r2[1] and r2[1] < r1[1] + s1[1]) or (r1[1] < r2[1] + s2[1] and r2[1] + s2[1] < r1[1] + s1[1])
+        return False
     def Render(self):
         if self.Health == 0:
             self.Screen.blit(self.Animations[1], (200, 200))
