@@ -51,13 +51,13 @@ class Entities():
         self.EnemyBullets = []
         self.Boss = Boss()
         self.Button = Button()
-        self.Doors = Doors()
+        self.Doors = Doors(game_screen)
         self.Portal = Portal()
 
 class GameManager():
     def __init__(self, game_screen, start_in_main_menu : bool, show_fps : bool):
         self.SCREEN = game_screen
-        self.INPUT = {"direction": [0, 0], "mouse": (False, False, False), "m_pos": (0, 0), "lmb_just": False}
+        self.INPUT = {"direction": [0, 0], "mouse": (False, False, False), "m_pos": (0, 0), "lmb_just": False, "space": False, "space_just" : False}
         self.INFO = MainInfo()
         self.MENUS = Menus(game_screen, start_in_main_menu, False, show_fps)
         self.ENTITIES = Entities(game_screen)
@@ -73,8 +73,6 @@ class GameManager():
         self.RENDERED.append(pygame.transform.scale(pygame.image.load(f"../img/bullets/player.png"), (20, 20)))
         self.RENDERED.append(pygame.transform.scale(pygame.image.load(f"../img/bullets/enemy.png"), (20, 20)))
     def EnterNewRoom(self):
-        self.ENTITIES.Player.Pos[0] = 1000 - self.ENTITIES.Player.Pos[0]
-        self.ENTITIES.Player.Pos[1] = 750 - self.ENTITIES.Player.Pos[1]
         self.ENTITIES.EnemyBullets = []
         self.ENTITIES.PlayerBullets = []
         self.ENTITIES.Enemies = []
@@ -97,6 +95,7 @@ class GameManager():
             self.INPUT["lmb_just"] = False
         else:
             self.INPUT["lmb_just"] = self.INPUT["mouse"][0]
+        prev = self.INPUT["space"]
         self.INPUT["m_pos"] = pygame.mouse.get_pos()
         for e in events:
             if e.type == pygame.KEYDOWN:
@@ -110,6 +109,8 @@ class GameManager():
                     self.INPUT["direction"][1] = 1
                 if e.key == pygame.K_UP:
                     self.INPUT["direction"][1] = -1
+                if e.key == pygame.K_SPACE:
+                    self.INPUT["space"] = True
             elif e.type == pygame.KEYUP:
                 if e.key == pygame.K_RIGHT:
                     if self.INPUT["direction"][0] != -1:
@@ -123,7 +124,13 @@ class GameManager():
                 if e.key == pygame.K_UP:
                     if self.INPUT["direction"][1] != 1:
                         self.INPUT["direction"][1] = 0
-        
+                if e.key == pygame.K_SPACE:
+                    self.INPUT["space"] = False
+        if prev == self.INPUT["space"]:
+            self.INPUT["space_just"] = False
+        else:
+            self.INPUT["space_just"] = self.INPUT["space"]
+
         ## Menu logic
         if self.MENUS.IsMainMenu or self.MENUS.IsOptionsMenu:
             status = self.MENUS.Collision(self.INPUT)
@@ -238,6 +245,7 @@ class GameManager():
                     status = self.ENTITIES.Doors.Update(self.ENTITIES.Player.Pos, self.INPUT, self.INFO.CurrentRoom, self.INFO.Rooms)
                     if status != -1:
                         self.INFO.CurrentRoom = status
+                        self.EnterNewRoom()
             if self.ENTITIES.Boss.State == "dead" and len(self.ENTITIES.Enemies) == 0:
                 status = self.ENTITIES.Portal.Update(self.ENTITIES.Player.Pos, self.INPUT)
                 if status != -1:
