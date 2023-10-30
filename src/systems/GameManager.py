@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 from ui.MainMenu import MainMenu
 from ui.Options import Options
 from entities.Enemy import Enemy
@@ -202,7 +203,7 @@ class GameManager():
             self.ENTITIES.PlayerBullets = []
             self.ENTITIES.Enemies = []
             self.ENTITIES.EnemyBullets = []
-            self.ENTITIES.Boss.Reset()
+            self.ENTITIES.Boss.State = "notspawned"
             self.ENTITIES.Button.LastRoom = 0
             self.ENTITIES.Button.Pressed = True
             self.INFO.MiniBoss.Chance = 0
@@ -258,7 +259,7 @@ class GameManager():
                         self.ENTITIES.Player.Health -= 1
                         self.ENTITIES.Player.Invulnerable = 60
                     else:
-                        self.ENTITIES.Boss.Spawn()
+                        self.ENTITIES.Boss.Spawn(self.INFO.ProblemsSolved)
                 else:
                     status = self.ENTITIES.Doors.Update(self.ENTITIES.Player.Pos, self.INPUT, self.INFO.CurrentRoom, self.INFO.Rooms)
                     if status != -1:
@@ -277,20 +278,19 @@ class GameManager():
             self.ENTITIES.Doors.Render(self.INFO.CurrentRoom, self.INFO.Rooms)
             self.ENTITIES.Button.Render()
             self.ENTITIES.Portal.Render(self.ENTITIES.Boss.State == "dead")
-            for e in self.ENTITIES.Enemies:
-                e.Render()
-            if self.ENTITIES.Boss.State == "alive":
-                self.ENTITIES.Boss.Render()
-            # bullet render (write code here)
             for b in self.ENTITIES.PlayerBullets:
                 self.SCREEN.blit(self.RENDERED[13], b["pos"])
             for b in self.ENTITIES.EnemyBullets:
                 self.SCREEN.blit(self.RENDERED[14], b["pos"])
+            if self.ENTITIES.Boss.State == "alive":
+                self.ENTITIES.Boss.Render()
+            for e in self.ENTITIES.Enemies:
+                e.Render()
             self.ENTITIES.Player.Render()
             self.SCREEN.blit(self.RENDERED[12].render(f"Problem: {self.INFO.Problem}={self.INFO.Answer['current']}", True, (0, 255, 0)), (200, 705))
         else:
             self.SCREEN.blit(self.RENDERED[11], (0, 0))
-        self.SCREEN.blit(self.RENDERED[12].render(f"SCORE: {self.INFO.ProblemsSolved*100+self.INFO.EnemiesKilled}", False, (0, 255, 0)), (5, 5))
+        self.SCREEN.blit(self.RENDERED[12].render(f"SCORE: {self.INFO.ProblemsSolved*500+self.INFO.EnemiesKilled}", False, (0, 255, 0)), (5, 5))
         self.MENUS.Render()
 
         return self.STATUS
