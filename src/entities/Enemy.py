@@ -8,10 +8,12 @@ class Enemy():
         self.Pos = [random.randint(200, 700), random.randint(200, 500)]
         self.Size = [80, 80]
         self.Health = 2
-        self.MovSpeed = 2
+        self.MovSpeed = 1
         self.AtkSpeed = 60
         self.AtkSpread = 1
-        self.BulletSpeed = 3
+        self.Wait = 0
+        self.WaitTime = 5
+        self.BulletSpeed = 2
         self.Distance = 10000
         self.Aim = [0, 0]
         self.Sprites = []
@@ -22,45 +24,60 @@ class Enemy():
                 self.Sprites.append(pygame.transform.scale(pygame.image.load(f"../img/enemies/1.png"), self.Size))
             case 2:
                 self.Sprites.append(pygame.transform.scale(pygame.image.load(f"../img/enemies/2.png"), self.Size))
-                self.MovSpeed = 3
-                self.AtkSpeed = 30
+                self.MovSpeed = 2
             case 3:
+                self.Size = [80, 100]
                 self.Sprites.append(pygame.transform.scale(pygame.image.load(f"../img/enemies/3.png"), self.Size))
-                self.AtkSpeed = 10
+                self.AtkSpeed = 25
             case 4:
                 self.Sprites.append(pygame.transform.scale(pygame.image.load(f"../img/enemies/4.png"), self.Size))
-                self.AtkSpeed = 60
+                self.AtkSpeed = 90
+                self.BulletSpeed = 3
                 self.AtkSpread = 5
+                self.WaitTime = 10
             case 5:
                 self.Sprites.append(pygame.transform.scale(pygame.image.load(f"../img/enemies/5.png"), self.Size))
-                self.AtkSpeed = 10
                 self.BulletSpeed = 3
+                self.AtkTime = 30
+                self.WaitTime = 30
             case 6:
                 self.Sprites.append(pygame.transform.scale(pygame.image.load(f"../img/enemies/6.png"), self.Size))
                 self.Health = 4
-                self.MovSpeed = 4
-                self.Distance = 2500
+                self.MovSpeed = 3
+                self.Distance = 625
             case 7:
                 self.Sprites.append(pygame.transform.scale(pygame.image.load(f"../img/enemies/7.png"), self.Size))
                 self.Health = 3
-                self.MovSpeed = 4
-                self.BulletSpeed = 6
+                self.MovSpeed = 2
+                self.BulletSpeed = 5
+                self.AtkSpeed = 120
                 self.Distance = 22500
+                self.WaitTime = 20
             case 8:
+                self.Size = [140, 140]
                 self.Sprites.append(pygame.transform.scale(pygame.image.load(f"../img/enemies/8.png"), self.Size))
                 self.Health = 8
-                self.MovSpeed = 1
-                self.AtkSpeed = 90
-                self.Distance = 625
+                self.AtkSpeed = 120
+                self.AtkSpread = 10
+                self.Distance = 0
+                self.WaitTime = 30
             case 9:
                 self.Sprites.append(pygame.transform.scale(pygame.image.load(f"../img/enemies/9.png"), self.Size))
                 self.Health = 3
-                self.MovSpeed = 4
-                self.Spread = 15
-                self.AtkSpeed = 120
+                self.MovSpeed = 3
+                self.BulletSpeed = 1
+                self.AtkSpread = 30
+                self.AtkSpeed = 300
+                self.WaitTime = 60
             case _:
                 self.Sprites.append(pygame.transform.scale(pygame.image.load(f"../img/enemies/0.png"), self.Size))
         self.Reload = random.randint(self.AtkSpeed//2, self.AtkSpeed)
+        self.MaxX = 920 - self.Size[0]
+        self.MaxY = 655 - self.Size[1]
+        self.RandX = 1
+        self.RandY = 1
+        self.RandTimer = 0
+        self.RandSign = [1, -1]
     def Update(self, player_pos : list, player_bullets : list, enemy_bullets : list):
         # dead
         if self.Health <= 0:
@@ -77,20 +94,41 @@ class Enemy():
                 continue
             b += 1
         # move
-        distance = (player_pos[0] - self.Pos[0]) * (player_pos[1] - self.Pos[1])
-        if distance < self.Distance:
-            if player_pos[0] + random.randint(-10, 10) < self.Pos[0]:
-                self.Pos[0] = max(200, min(800, self.Pos[0]+self.MovSpeed))
-            else:
-                self.Pos[0] = max(200, min(800, self.Pos[0]-self.MovSpeed))
-            if player_pos[1] + random.randint(-10, 10) < self.Pos[1]:
-                self.Pos[0] = max(100, min(600, self.Pos[1]+self.MovSpeed))
-            else:
-                self.Pos[0] = max(100, min(600, self.Pos[1]-self.MovSpeed))
-        # shoot
         if self.Reload != 0:
             self.Reload -= 1
+            if self.Wait != 0:
+                self.Wait -= 1
+            else:
+                distance = abs((player_pos[0] - self.Pos[0]) * (player_pos[1] - self.Pos[1]))
+                if self.RandTimer != 0:
+                    self.RandTimer -= 1
+                    self.Pos[0] = max(70, min(self.MaxX, self.Pos[0]+self.MovSpeed*self.RandX))
+                    self.Pos[1] = max(40, min(self.MaxY, self.Pos[1]+self.MovSpeed*self.RandY))
+                elif distance < self.Distance:
+                    if player_pos[0] < self.Pos[0]:
+                        self.Pos[0] = max(70, min(self.MaxX, self.Pos[0]+self.MovSpeed))
+                    else:
+                        self.Pos[0] = max(70, min(self.MaxX, self.Pos[0]-self.MovSpeed))
+                    if player_pos[1] < self.Pos[1]:
+                        self.Pos[1] = max(40, min(self.MaxY, self.Pos[1]+self.MovSpeed))
+                    else:
+                        self.Pos[1] = max(40, min(self.MaxY, self.Pos[1]-self.MovSpeed))
+                elif distance > self.Distance * 2 or self.Pos[0] == 70 or self.Pos[0] == self.MaxX or self.Pos[1] == 40 or self.Pos[1] == self.MaxY:
+                    if player_pos[0] < self.Pos[0]:
+                        self.Pos[0] = max(70, min(self.MaxX, self.Pos[0]-self.MovSpeed))
+                    else:
+                        self.Pos[0] = max(70, min(self.MaxX, self.Pos[0]+self.MovSpeed))
+                    if player_pos[1] < self.Pos[1]:
+                        self.Pos[1] = max(40, min(self.MaxY, self.Pos[1]-self.MovSpeed))
+                    else:
+                        self.Pos[1] = max(40, min(self.MaxY, self.Pos[1]+self.MovSpeed))
+                else:
+                    self.RandTimer = 90
+                    self.RandX = self.RandSign[random.randint(0, 1)]
+                    self.RandY = self.RandSign[random.randint(0, 1)]
+        # shoot
         else:
+            self.Wait = self.WaitTime
             self.Reload = self.AtkSpeed
             vector = [player_pos[0] - self.Pos[0] - self.Size[0]//2, player_pos[1] - self.Pos[1] - self.Size[1]//2]
             magnitude = math.sqrt(vector[0] * vector[0] + vector[1] * vector[1])
@@ -100,7 +138,11 @@ class Enemy():
             self.Aim[1] = vector[1]
             vector[0] *= self.BulletSpeed
             vector[1] *= self.BulletSpeed
-            enemy_bullets.append({"pos": [self.Pos[0] + self.Size[0]//2, self.Pos[1] + self.Size[1]//2], "dir":vector})
+            enemy_bullets.append({"pos": [self.Pos[0] + self.Size[0]//2, self.Pos[1] + self.Size[1]//2], "dir":vector.copy()})
+            for i in range(1, self.AtkSpread):
+                vector[0] += (random.random() - 0.5) * 2
+                vector[1] += (random.random() - 0.5) * 2
+                enemy_bullets.append({"pos": [self.Pos[0] + self.Size[0]//2, self.Pos[1] + self.Size[1]//2], "dir":vector.copy()})
         return -1
     def Collide(self, r1 : list, s1 : list, r2 : list, s2 : list):
         if (r1[0] < r2[0] and r2[0] < r1[0] + s1[0]) or (r1[0] < r2[0] + s2[0] and r2[0] + s2[0] < r1[0] + s1[0]):

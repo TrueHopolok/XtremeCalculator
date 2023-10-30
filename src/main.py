@@ -8,7 +8,7 @@ HEIGHT = 1000
 WIDTH = 750
 TITLE = "Xtreme Calculator"
 ICON = "../img/icon.png"
-# MUSIC = ""
+# MUSIC = "../music.m4a"
 
 ## Screen init 
 pygame.init()
@@ -29,11 +29,12 @@ running = True
 delta = 1000/FPS
 
 ## Music init
-''' 
-pygame.mixer_music.load(MUSIC)
-pygame.mixer.music.play(-1)
-pygame.mixer_music.set_volume(50)
 '''
+pygame.mixer.music.load(MUSIC)
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(50)
+'''
+
 
 ## Game logic init
 game_manager = GameManager(screen, True, True)

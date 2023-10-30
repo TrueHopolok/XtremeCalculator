@@ -75,10 +75,11 @@ class GameManager():
         self.RENDERED.append(pygame.transform.scale(pygame.image.load(f"../img/bullets/enemy.png"), (20, 20)))
     def EnterNewRoom(self):
         self.INFO.RoomsClearedOnFloor += 1
+        self.ENTITIES.Button.Pressed = True
         self.ENTITIES.EnemyBullets = []
         self.ENTITIES.PlayerBullets = []
         self.ENTITIES.Enemies = []
-        if self.INFO.CurrentRoom == 10:
+        if self.INFO.Rooms[self.INFO.CurrentRoom] == 10:
             return
         if self.INFO.MiniBoss.Respawn > 0:
             self.INFO.MiniBoss.Respawn -= 1
@@ -86,12 +87,15 @@ class GameManager():
             self.INFO.MiniBoss.Chance += self.INFO.MiniBoss.Rate
         else:
             self.INFO.MiniBoss.Chance = 0
-            self.INFO.MiniBoss.Respawn = 3
+            self.INFO.MiniBoss.Respawn = 2
             self.ENTITIES.Enemies.append(Enemy(self.SCREEN, random.randint(7, 9)))
-        amount = max(5, min(min(40, 10 + self.INFO.ProblemsSolved * 5), self.INFO.RoomsClearedOnFloor * 3 + self.INFO.ProblemsSolved * 5))
+        min_amount = min(40, max(5, self.INFO.ProblemsSolved * 5))
+        max_amount = min(40, 10 + self.INFO.ProblemsSolved * 5)
+        amount = min(max_amount, min_amount + self.INFO.RoomsClearedOnFloor * 2)
+        enemy_min = max(1, min(4, self.INFO.ProblemsSolved - 1))
+        enemy_max = min(6, 2 + self.INFO.ProblemsSolved)
         for i in range(amount):
-            self.ENTITIES.Enemies.append(Enemy(self.SCREEN, random.randint(1, 100)%max(1, min(8, self.INFO.ProblemsSolved)) + 1))
-            
+            self.ENTITIES.Enemies.append(Enemy(self.SCREEN, random.randint(enemy_min, enemy_max)))
         
     def update(self, events):
         ## Input handle
@@ -144,7 +148,8 @@ class GameManager():
                 case 3:
                     self.STATUS = -self.STATUS
                 case 2:
-                    pygame.mixer.music.set_volume(50 - pygame.mixer.music.get_volume())
+                    # pygame.mixer.music.set_volume(50 - pygame.mixer.music.get_volume())
+                    pass
                 case 1:
                     self.MENUS.IsMainMenu = False
                     self.INFO.Loaded = False
@@ -201,7 +206,7 @@ class GameManager():
             self.ENTITIES.Button.LastRoom = 0
             self.ENTITIES.Button.Pressed = True
             self.INFO.MiniBoss.Chance = 0
-            self.INFO.MiniBoss.Rate = self.INFO.ProblemsSolved
+            self.INFO.MiniBoss.Rate = self.INFO.ProblemsSolved * 5
             self.INFO.MiniBoss.Respawn = 0
         
         ## Game logic
@@ -219,8 +224,8 @@ class GameManager():
                 b += 1
             b = 0
             while b < len(self.ENTITIES.EnemyBullets):
-                self.ENTITIES.EnemyBullets[b]["pos"][0] = max(70, min(900, self.ENTITIES.EnemyBullets[b]["pos"][0] + self.ENTITIES.EnemyBullets[b]["pos"][0] * self.ENTITIES.EnemyBullets[b]["dir"][0]))
-                self.ENTITIES.EnemyBullets[b]["pos"][1] = max(50, min(650, self.ENTITIES.EnemyBullets[b]["pos"][1] + self.ENTITIES.EnemyBullets[b]["pos"][1] * self.ENTITIES.EnemyBullets[b]["dir"][1]))
+                self.ENTITIES.EnemyBullets[b]["pos"][0] = max(70, min(900, self.ENTITIES.EnemyBullets[b]["pos"][0] + self.ENTITIES.EnemyBullets[b]["dir"][0]))
+                self.ENTITIES.EnemyBullets[b]["pos"][1] = max(50, min(650, self.ENTITIES.EnemyBullets[b]["pos"][1] + self.ENTITIES.EnemyBullets[b]["dir"][1]))
                 if self.ENTITIES.EnemyBullets[b]["pos"][0] == 70 or self.ENTITIES.EnemyBullets[b]["pos"][0] == 900:
                     self.ENTITIES.EnemyBullets.pop(b)
                     continue
@@ -246,6 +251,7 @@ class GameManager():
             if self.ENTITIES.Boss.State == "alive":
                 self.ENTITIES.Boss.Update(self.ENTITIES.Player.Pos, self.ENTITIES.PlayerBullets, self.ENTITIES.EnemyBullets)
             if self.ENTITIES.Boss.State == "notspawned" and len(self.ENTITIES.Enemies) == 0:
+                self.ENTITIES.EnemyBullets = []
                 status = self.ENTITIES.Button.Update(self.ENTITIES.Player.Pos, self.INPUT, self.INFO.Rooms[self.INFO.CurrentRoom], self.INFO.Answer)
                 if status != -1:
                     if self.INFO.Answer["final"] != self.INFO.Answer["current"]:
@@ -259,6 +265,7 @@ class GameManager():
                         self.INFO.CurrentRoom = status
                         self.EnterNewRoom()
             if self.ENTITIES.Boss.State == "dead" and len(self.ENTITIES.Enemies) == 0:
+                self.ENTITIES.EnemyBullets = []
                 status = self.ENTITIES.Portal.Update(self.ENTITIES.Player.Pos, self.INPUT)
                 if status != -1:
                     self.INFO.ProblemsSolved += 1

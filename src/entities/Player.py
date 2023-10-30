@@ -34,13 +34,13 @@ class Player():
         # rampage
         if enemy_killed != 0:
             self.Reload = 0
-            self.Rampage = 300
-            self.Upgrade = max(4, min(20, self.Upgrade - 4))
+            self.Rampage = 20
+            self.Upgrade = max(8, min(20, self.Upgrade - 3))
         elif self.Rampage != 0:
             self.Rampage -= 1
         elif self.Upgrade != 20:
-            self.Upgrade = max(4, min(20, self.Upgrade + 4))
-            self.Rampage = 120
+            self.Upgrade = max(8, min(20, self.Upgrade + 1))
+            self.Rampage = 20
         # shoot
         if self.Reload != 0:
             self.Reload -= 1
@@ -59,10 +59,14 @@ class Player():
         if self.Invulnerable != 0:
             self.Invulnerable -= 1
         else:
-            bullet_size = [20, 20]
+            player_pos = [self.Pos[0] + 30, self.Pos[1] + 30]
+            player_size = [20, 20]
+            bullet_pos = [0, 0]
+            bullet_size = [14, 14]
             b = 0
             for b in range(len(enemy_bullets)):
-                if self.Collide(self.Pos, [70, 70], enemy_bullets[b]["pos"], bullet_size):
+                bullet_pos = [enemy_bullets[b]["pos"][0] + 3, enemy_bullets[b]["pos"][1] + 3]
+                if self.Collide(player_pos, player_size, bullet_pos, bullet_size):
                     enemy_bullets.pop(b)
                     self.Health -= 1
                     self.Invulnerable = 60
