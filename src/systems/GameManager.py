@@ -32,7 +32,7 @@ class Menus():
         self.IsMainMenu = is_main_menu
         self.IsOptionsMenu = is_options
         self.MainMenu = MainMenu(screen)
-        self.OptionsMenu = Options(screen, show_fps)
+        self.OptionsMenu = Options(screen, show_fps, pygame.mixer.music.get_volume() != 0)
     def Collision(self, player_input : dict):
         if self.IsMainMenu and (not self.IsOptionsMenu):
             return self.MainMenu.Collision(player_input)
@@ -150,7 +150,7 @@ class GameManager():
                 case 3:
                     self.STATUS = -self.STATUS
                 case 2:
-                    # pygame.mixer.music.set_volume(50 - pygame.mixer.music.get_volume())
+                    pygame.mixer.music.set_volume(0.5 - pygame.mixer.music.get_volume())
                     pass
                 case 1:
                     self.MENUS.IsMainMenu = False

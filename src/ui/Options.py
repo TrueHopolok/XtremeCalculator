@@ -1,7 +1,7 @@
 import pygame
 
 class Options():
-    def __init__(self, screen, show_fps : bool):
+    def __init__(self, screen, show_fps : bool, is_muted : bool):
         self.SCREEN = screen
         self.Background = dict()
         self.MuteButton = dict()
@@ -13,7 +13,7 @@ class Options():
         self.MuteButton["size"] = (200, 100)
         self.MuteButton[True] = pygame.transform.scale(pygame.image.load("../img/ui/soundOn.png"), self.MuteButton["size"])
         self.MuteButton[False] = pygame.transform.scale(pygame.image.load("../img/ui/soundOff.png"), self.MuteButton["size"])
-        self.NotMuted = True # pygame.mixer.music.get_volume() != 0
+        self.NotMuted = is_muted
         self.FpsCounter["pos"] = (400, 455)
         self.FpsCounter["size"] = (200, 100)
         self.FpsCounter[True] = pygame.transform.scale(pygame.image.load("../img/ui/FPSOn.png"), self.FpsCounter["size"])
