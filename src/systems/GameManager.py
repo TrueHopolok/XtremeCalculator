@@ -94,10 +94,8 @@ class GameManager():
         amount = min(max_amount, min_amount + self.INFO.RoomsClearedOnFloor * 2)
         enemy_min = max(1, min(4, self.INFO.ProblemsSolved - 1))
         enemy_max = min(6, 2 + self.INFO.ProblemsSolved)
-        # for i in range(amount):
-        #     self.ENTITIES.Enemies.append(Enemy(self.SCREEN, random.randint(enemy_min, enemy_max)))
-        for i in range(1, 10):
-            self.ENTITIES.Enemies.append(Enemy(self.SCREEN, i))
+        for i in range(amount):
+            self.ENTITIES.Enemies.append(Enemy(self.SCREEN, random.randint(enemy_min, enemy_max)))
         
     def update(self, events):
         ## Input handle

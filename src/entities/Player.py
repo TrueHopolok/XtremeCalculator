@@ -35,17 +35,17 @@ class Player():
         if enemy_killed != 0:
             self.Reload = 0
             self.Rampage = 20
-            self.Upgrade = max(8, min(20, self.Upgrade - 3))
+            self.Upgrade = max(15, min(30, self.Upgrade - 3))
         elif self.Rampage != 0:
             self.Rampage -= 1
         elif self.Upgrade != 20:
-            self.Upgrade = max(8, min(20, self.Upgrade + 1))
+            self.Upgrade = max(15, min(30, self.Upgrade + 1))
             self.Rampage = 20
         # shoot
         if self.Reload != 0:
             self.Reload -= 1
         elif player_input["mouse"][0]:
-            self.Reload = 1
+            self.Reload = self.Upgrade
             vector = [player_input["m_pos"][0] - self.Pos[0] - 35, player_input["m_pos"][1] - self.Pos[1] - 40]
             magnitude = math.sqrt(vector[0] * vector[0] + vector[1] * vector[1])
             vector[0] /= magnitude
