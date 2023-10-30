@@ -6,7 +6,7 @@ class Enemy():
     def __init__(self, screen, number : int):
         self.Screen = screen
         self.Pos = [random.randint(200, 700), random.randint(200, 500)]
-        self.Size = [80, 80]
+        self.Size = [80, 100]
         self.Health = 2
         self.MovSpeed = 1
         self.AtkSpeed = 60
@@ -26,7 +26,6 @@ class Enemy():
                 self.Sprites.append(pygame.transform.scale(pygame.image.load(f"../img/enemies/2.png"), self.Size))
                 self.MovSpeed = 2
             case 3:
-                self.Size = [80, 100]
                 self.Sprites.append(pygame.transform.scale(pygame.image.load(f"../img/enemies/3.png"), self.Size))
                 self.AtkSpeed = 25
             case 4:
@@ -41,6 +40,7 @@ class Enemy():
                 self.AtkTime = 30
                 self.WaitTime = 30
             case 6:
+                self.Size = [80, 120]
                 self.Sprites.append(pygame.transform.scale(pygame.image.load(f"../img/enemies/6.png"), self.Size))
                 self.Health = 4
                 self.MovSpeed = 3
@@ -54,7 +54,7 @@ class Enemy():
                 self.Distance = 22500
                 self.WaitTime = 20
             case 8:
-                self.Size = [140, 140]
+                self.Size = [200, 150]
                 self.Sprites.append(pygame.transform.scale(pygame.image.load(f"../img/enemies/8.png"), self.Size))
                 self.Health = 8
                 self.AtkSpeed = 120

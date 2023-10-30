@@ -45,7 +45,7 @@ class Player():
         if self.Reload != 0:
             self.Reload -= 1
         elif player_input["mouse"][0]:
-            self.Reload = self.Upgrade
+            self.Reload = 1
             vector = [player_input["m_pos"][0] - self.Pos[0] - 35, player_input["m_pos"][1] - self.Pos[1] - 40]
             magnitude = math.sqrt(vector[0] * vector[0] + vector[1] * vector[1])
             vector[0] /= magnitude
