@@ -1,10 +1,8 @@
 ## Animations:
 - 1-9
     + walk
-    + aim
 - player
     + walk
-    + aim
 - boss
     + walk
     + attack1
@@ -26,6 +24,10 @@
 - Boss music
 
 ## Features:
+- Boss healthbar
+- Enemy behavior update
+- Player dodge-roll
+- Enemy and player weapons
 - Best score saving (offline)
 - Settings saving
 - Run saving/loading
